@@ -19,40 +19,45 @@ fun main() {
         "nine" to 9
     )
 
-    fun findFirstDigit(input: String): Int {
-        for (i in input.indices) {
-            if (input[i].isDigit()) {
-                return input[i].digitToInt()
-            }
-            val sub = input.substring(i)
-            for (num in lookupTable.keys) {
-                if (sub.startsWith(num)) {
-                    return lookupTable[num]!!
-                }
-            }
-        }
-        return 0
-    }
-
-    fun findLastDigit(input: String): Int {
-        for (i in input.indices.reversed()) {
-            if (input[i].isDigit()) {
-                return input[i].digitToInt()
-            }
-            val sub = input.substring(0, i + 1)
-            for (num in lookupTable.keys) {
-                if (sub.endsWith(num)) {
-                    return lookupTable[num]!!
-                }
-            }
-        }
-        return 0
-    }
-
     fun part2(input: List<String>): Int {
         return input.fold(0) { acc, s ->
-            val firstDigit = findFirstDigit(s)
-            val lastDigit = findLastDigit(s)
+            var firstDigit = -1
+            var lastDigit = -1
+            var leftIndex = 0
+            var rightIndex = s.length
+
+            loop@ while (leftIndex != rightIndex) {
+                val sub = s.substring(leftIndex, rightIndex)
+                if (firstDigit == -1) {
+                    if (sub.first().isDigit()) {
+                        firstDigit = sub.first().digitToInt()
+                    } else {
+                        for (num in lookupTable.keys) {
+                            if (sub.startsWith(num)) {
+                                firstDigit = lookupTable[num]!!
+                                continue@loop
+                            }
+                        }
+                        leftIndex++
+                    }
+                }
+                if (lastDigit == -1) {
+                    if (sub.last().isDigit()) {
+                        lastDigit = sub.last().digitToInt()
+                    } else {
+                        for (num in lookupTable.keys) {
+                            if (sub.endsWith(num)) {
+                                lastDigit = lookupTable[num]!!
+                                continue@loop
+                            }
+                        }
+                        rightIndex--
+                    }
+                }
+                if (firstDigit != -1 && lastDigit != -1) {
+                    break
+                }
+            }
             val sum = firstDigit * 10 + lastDigit
             sum + acc
         }
