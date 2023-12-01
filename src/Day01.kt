@@ -36,8 +36,24 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day01_test")
-    check(part2(testInput) == 281)
+    val testInput1 = """
+        1abc2
+        pqr3stu8vwx
+        a1b2c3d4e5f
+        treb7uchet
+    """.trimIndent().lines()
+    check(part1(testInput1) == 142)
+
+    val testInput2 = """
+        two1nine
+        eightwothree
+        abcone2threexyz
+        xtwone3four
+        4nineeightseven2
+        zoneight234
+        7pqrstsixteen
+    """.trimIndent().lines()
+    check(part2(testInput2) == 281)
 
     val input = readInput("Day01")
     part1(input).println()
