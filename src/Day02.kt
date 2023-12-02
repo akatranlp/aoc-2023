@@ -1,11 +1,7 @@
-import kotlin.math.max
+data class Game(val gameID: Int, val red: Int, val blue: Int, val green: Int)
 
 fun main() {
-    val maxRed = 12
-    val maxGreen = 13
-    val maxBlue = 14
-
-    fun part1(input: List<String>): Int {
+    fun parseInput(input: List<String>): List<Game> {
         return input.mapIndexed { i, s ->
             s.split(":")[1].replace(" ", "").split(";").map {
                 var red = 0
@@ -21,48 +17,26 @@ fun main() {
                         green = it.removeSuffix("green").toInt()
                     }
                 }
-
-                red > maxRed || blue > maxBlue || green > maxGreen
-            }.count { it }.let {
-                if (it == 0) {
-                    i + 1
-                } else {
-                    0
-                }
+                listOf(red, green, blue)
+            }.let {
+                val red = it.maxOf { it[0] }
+                val blue = it.maxOf { it[1] }
+                val green = it.maxOf { it[2] }
+                Game(i + 1, red, blue, green)
             }
-        }.sum()
+        }
+    }
+
+    fun part1(input: List<String>): Int {
+        val maxRed = 12
+        val maxGreen = 13
+        val maxBlue = 14
+        return parseInput(input).filter { it.red <= maxRed && it.blue <= maxBlue && it.green <= maxGreen }
+            .sumOf { it.gameID }
     }
 
     fun part2(input: List<String>): Int {
-        return input.mapIndexed { i, s ->
-            s.split(":")[1].replace(" ", "").split(";").map {
-                var red = 0
-                var blue = 0
-                var green = 0
-
-                it.split(",").forEach {
-                    if (it.endsWith("red")) {
-                        red = it.removeSuffix("red").toInt()
-                    } else if (it.endsWith("blue")) {
-                        blue = it.removeSuffix("blue").toInt()
-                    } else {
-                        green = it.removeSuffix("green").toInt()
-                    }
-                }
-
-                listOf(red, green, blue)
-            }.let {
-                var minRed = 0
-                var minBlue = 0
-                var minGreen = 0
-                it.forEach {
-                    minRed = max(it[0], minRed)
-                    minBlue = max(it[1], minBlue)
-                    minGreen = max(it[2], minGreen)
-                }
-                minRed * minBlue * minGreen
-            }
-        }.sum()
+        return parseInput(input).sumOf { it.red * it.blue * it.green }
     }
 
     // test if implementation meets criteria from the description, like:
