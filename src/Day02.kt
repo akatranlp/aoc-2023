@@ -1,3 +1,5 @@
+import kotlin.math.max
+
 fun main() {
     val maxRed = 12
     val maxGreen = 13
@@ -32,7 +34,35 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        return input.mapIndexed { i, s ->
+            s.split(":")[1].replace(" ", "").split(";").map {
+                var red = 0
+                var blue = 0
+                var green = 0
+
+                it.split(",").forEach {
+                    if (it.endsWith("red")) {
+                        red = it.removeSuffix("red").toInt()
+                    } else if (it.endsWith("blue")) {
+                        blue = it.removeSuffix("blue").toInt()
+                    } else {
+                        green = it.removeSuffix("green").toInt()
+                    }
+                }
+
+                listOf(red, green, blue)
+            }.let {
+                var minRed = 0
+                var minBlue = 0
+                var minGreen = 0
+                it.forEach {
+                    minRed = max(it[0], minRed)
+                    minBlue = max(it[1], minBlue)
+                    minGreen = max(it[2], minGreen)
+                }
+                minRed * minBlue * minGreen
+            }
+        }.sum()
     }
 
     // test if implementation meets criteria from the description, like:
@@ -45,9 +75,7 @@ fun main() {
     """.trimIndent().lines()
     check(part1(testInput) == 8)
 
-    val testInput2 = """
-    """.trimIndent().lines()
-    check(part2(testInput2) == 1)
+    check(part2(testInput) == 2286)
 
     val input = readInput("Day02")
     part1(input).println()
