@@ -1,8 +1,8 @@
 fun main() {
     fun part1(input: List<String>): Int {
-        return input.fold(0) { acc, s ->
+        return input.sumOf { s ->
             s.filter { it.isDigit() }.map { it.digitToInt() }.let {
-                it.first() * 10 + it.last() + acc
+                it.first() * 10 + it.last()
             }
         }
     }
@@ -25,11 +25,13 @@ fun main() {
                 val sub = it.substring(i)
                 var returnValue = c
 
-                for (num in lookupTable.keys) {
+                for ((num, numC) in lookupTable.entries) {
                     if (sub.startsWith(num)) {
-                        returnValue = lookupTable[num]!!
+                        returnValue = numC
+                        break
                     }
                 }
+
                 returnValue
             }.toString()
         }.let { part1(it) }
