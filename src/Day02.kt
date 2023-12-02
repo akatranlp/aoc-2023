@@ -1,27 +1,24 @@
 data class Game(val gameID: Int, val red: Int, val blue: Int, val green: Int)
+data class RGB(var red: Int, var blue: Int, var green: Int)
 
 fun main() {
     fun parseInput(input: List<String>): List<Game> {
         return input.mapIndexed { i, s ->
             s.split(":")[1].replace(" ", "").split(";").map {
-                var red = 0
-                var blue = 0
-                var green = 0
-
+                val rgb = RGB(0, 0, 0)
                 it.split(",").forEach {
-                    if (it.endsWith("red")) {
-                        red = it.removeSuffix("red").toInt()
-                    } else if (it.endsWith("blue")) {
-                        blue = it.removeSuffix("blue").toInt()
-                    } else {
-                        green = it.removeSuffix("green").toInt()
+                    val num = it.toInt()
+                    when {
+                        it.endsWith("red") -> rgb.red = num
+                        it.endsWith("blue") -> rgb.blue = num
+                        it.endsWith("green") -> rgb.green = num
                     }
                 }
-                listOf(red, green, blue)
+                rgb
             }.let {
-                val red = it.maxOf { it[0] }
-                val blue = it.maxOf { it[1] }
-                val green = it.maxOf { it[2] }
+                val red = it.maxOf { it.red }
+                val blue = it.maxOf { it.blue }
+                val green = it.maxOf { it.green }
                 Game(i + 1, red, blue, green)
             }
         }
