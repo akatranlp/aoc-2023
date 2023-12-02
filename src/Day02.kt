@@ -7,28 +7,29 @@ fun main() {
             s.split(":")[1].replace(" ", "").split(";").map {
                 val rgb = RGB(0, 0, 0)
                 it.split(",").forEach {
-                    val num = it.toInt()
                     when {
-                        it.endsWith("red") -> rgb.red = num
-                        it.endsWith("blue") -> rgb.blue = num
-                        it.endsWith("green") -> rgb.green = num
+                        it.endsWith("red") -> rgb.red = it.removeSuffix("red").toInt()
+                        it.endsWith("blue") -> rgb.blue = it.removeSuffix("blue").toInt()
+                        it.endsWith("green") -> rgb.green = it.removeSuffix("green").toInt()
                     }
                 }
                 rgb
             }.let {
-                val red = it.maxOf { it.red }
-                val blue = it.maxOf { it.blue }
-                val green = it.maxOf { it.green }
-                Game(i + 1, red, blue, green)
+                it.fold(RGB(0, 0, 0)) { acc, rgb ->
+                    acc.red = maxOf(acc.red, rgb.red)
+                    acc.blue = maxOf(acc.blue, rgb.blue)
+                    acc.green = maxOf(acc.green, rgb.green)
+                    acc
+                }.let {
+                    Game(i + 1, it.red, it.blue, it.green)
+                }
             }
         }
     }
 
     fun part1(input: List<String>): Int {
-        val maxRed = 12
-        val maxGreen = 13
-        val maxBlue = 14
-        return parseInput(input).filter { it.red <= maxRed && it.blue <= maxBlue && it.green <= maxGreen }
+        val maxRGB = RGB(12, 13, 14)
+        return parseInput(input).filter { it.red <= maxRGB.red && it.blue <= maxRGB.blue && it.green <= maxRGB.green }
             .sumOf { it.gameID }
     }
 
