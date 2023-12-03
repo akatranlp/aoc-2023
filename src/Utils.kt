@@ -19,3 +19,7 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  * The cleaner shorthand for printing output.
  */
 fun Any?.println() = println(this)
+
+inline infix fun <T, R> T.into(other: (T) -> R): R = other(this)
+
+infix fun <T, R, S> ((T) -> R).into(other: (R) -> S): ((T) -> S) = { it into this into other }
