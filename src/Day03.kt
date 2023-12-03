@@ -65,7 +65,28 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        val numbers = parseNumbers(input)
+        val symbols = parseSymbols(input).filterValues { it == '*' }
+
+        return symbols.map { (coords, _) ->
+            val neighbourNumbers = mutableListOf<Number>()
+            val (row, col) = coords
+            for ((dr, dc) in neighbours) {
+                val newRow = row + dr
+                val newCol = col + dc
+                for (num in numbers) {
+                    if (newRow != num.row) continue
+                    if (newCol in num.start..<num.end) {
+                        if (num !in neighbourNumbers)
+                            neighbourNumbers.add(num)
+                    }
+                }
+            }
+            if (neighbourNumbers.size == 2) {
+                return@map neighbourNumbers.fold(1) { acc, it -> it.number * acc }
+            }
+            null
+        }.filterNotNull().sum()
     }
 
     // test if implementation meets criteria from the description, like:
@@ -83,7 +104,7 @@ fun main() {
     """.trimIndent().lines()
     check(part1(testInput) == 4361)
 
-    check(part2(testInput) == 1)
+    check(part2(testInput) == 467835)
 
     val input = readInput("Day03")
     part1(input).println()
