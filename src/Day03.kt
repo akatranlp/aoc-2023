@@ -4,42 +4,38 @@ val neighbours = setOf(-1 to -1, -1 to 0, -1 to 1, 0 to -1, 0 to 1, 1 to -1, 1 t
 
 fun main() {
     fun parseNumbers(input: List<String>): List<Number> {
-        val numbers = mutableListOf<Number>()
-        for (i in input.indices) {
-            val line = input[i]
-            var startIndex = line.length
-            for (j in line.indices) {
-                val c = input[i][j]
-                if (c.isDigit()) {
-                    if (j < startIndex) startIndex = j
-                }
-                if (j == line.length - 1 || !c.isDigit()) {
-                    var endIndex = j
-                    if (j == line.length - 1 && c.isDigit()) endIndex += 1
-
-                    if (startIndex < endIndex) {
-                        numbers.add(Number(i, startIndex, endIndex, line.substring(startIndex, endIndex).toInt()))
+        return buildList {
+            for ((row, line) in input.withIndex()) {
+                var startIndex = line.length
+                for ((col, c) in line.withIndex()) {
+                    if (c.isDigit()) {
+                        if (col < startIndex) startIndex = col
                     }
+                    if (col == line.length - 1 || !c.isDigit()) {
+                        var endIndex = col
+                        if (col == line.length - 1 && c.isDigit()) endIndex += 1
 
-                    startIndex = line.length
+                        if (startIndex < endIndex) {
+                            this.add(Number(row, startIndex, endIndex, line.substring(startIndex, endIndex).toInt()))
+                        }
+
+                        startIndex = line.length
+                    }
                 }
             }
         }
-        return numbers
     }
 
     fun parseSymbols(input: List<String>): Map<Pair<Int, Int>, Char> {
-        val symbols = mutableMapOf<Pair<Int, Int>, Char>()
-        for (i in input.indices) {
-            val line = input[i]
-            for (j in line.indices) {
-                val c = input[i][j]
-                if (!c.isDigit() && c != '.') {
-                    symbols[(i to j)] = c
+        return buildMap {
+            for ((row, line) in input.withIndex()) {
+                for ((col, c) in line.withIndex()) {
+                    if (!c.isDigit() && c != '.') {
+                        this[(row to col)] = c
+                    }
                 }
             }
         }
-        return symbols
     }
 
     fun part1(input: List<String>): Int {
@@ -52,16 +48,13 @@ fun main() {
                     val newRow = it.row + dr
                     val newCol = col + dc
 
-                    val symbol = symbols[newRow to newCol]
-                    if (symbol != null) {
+                    if (newRow to newCol in symbols) {
                         return@map it.number
                     }
                 }
             }
             null
         }.filterNotNull().sum()
-
-        // 611907
     }
 
     fun part2(input: List<String>): Int {
@@ -83,7 +76,7 @@ fun main() {
                 }
             }
             if (neighbourNumbers.size == 2) {
-                return@map neighbourNumbers.fold(1) { acc, it -> it.number * acc }
+                return@map neighbourNumbers.map { it.number }.reduce(Int::times)
             }
             null
         }.filterNotNull().sum()
