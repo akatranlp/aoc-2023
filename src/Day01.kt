@@ -1,9 +1,7 @@
 fun main() {
     fun part1(input: List<String>): Int {
         return input.sumOf { s ->
-            s.filter { it.isDigit() }.map { it.digitToInt() }.let {
-                it.first() * 10 + it.last()
-            }
+            s.first { it.isDigit() }.digitToInt() * 10 + s.last { it.isDigit() }.digitToInt()
         }
     }
 
@@ -33,8 +31,8 @@ fun main() {
                 }
 
                 returnValue
-            }.toString()
-        }.let { part1(it) }
+            }.joinToString()
+        }.let(::part1)
     }
 
     // test if implementation meets criteria from the description, like:
