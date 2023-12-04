@@ -1,6 +1,7 @@
 import kotlin.math.pow
 
 data class Card(val id: Int, val winningNumbers: Set<Int>, val myNumbers: List<Int>)
+data class CardResult(val id: Int, val numbers: Int)
 
 fun main() {
     fun parseCards(input: List<String>): List<Card> {
@@ -23,7 +24,24 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        val cards = parseCards(input).map { card ->
+            CardResult(card.id, card.myNumbers.map { it in card.winningNumbers }.filter { it }.size)
+        }
+        val map = mutableMapOf(*cards.map { it.id to 1 }.toTypedArray())
+
+        for (cardResult in cards) {
+            val entry = map[cardResult.id]!!
+            for (j in 0..<entry) {
+                val numbers = cardResult.numbers
+                for (k in cardResult.id + 1..cardResult.id + numbers) {
+                    if (k <= cards.size) {
+                        map[k] = map[k]!! + 1
+                    }
+                }
+            }
+        }
+
+        return map.values.sum()
     }
 
     // test if implementation meets criteria from the description, like:
@@ -37,7 +55,7 @@ fun main() {
     """.trimIndent().lines()
     check(part1(testInput) == 13)
 
-    check(part2(testInput) == 1)
+    check(part2(testInput) == 30)
 
     val input = readInput("Day04")
     part1(input).println()
