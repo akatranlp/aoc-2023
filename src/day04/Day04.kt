@@ -1,36 +1,33 @@
 package day04
 
-import kotlin.math.pow
 import utils.readInput
 
-data class CardResult(val id: Int, val numbers: Int)
-
 fun main() {
-    fun parseCards(input: List<String>): List<CardResult> {
+    fun parseCards(input: List<String>): List<Int> {
         return input.mapIndexed { i, s ->
-            s.split(":")[1].split("|").let { line ->
-                val winningNumbers = line[0].split(" ").filter { it.isNotBlank() }.map { it.toInt() }.toSet()
-                val myNumbers = line[1].split(" ").filter { it.isNotBlank() }.map { it.toInt() }
-                CardResult(i + 1, myNumbers.count { it in winningNumbers })
+            s.split(":", " |").let { (_, winningNumbersText, myNumbersText) ->
+                val winningNumbers = winningNumbersText.chunked(3).map { it.trimStart().toInt() }.toSet()
+                val myNumbers = myNumbersText.chunked(3).map { it.trimStart().toInt() }
+                myNumbers.count { it in winningNumbers }
             }
         }
     }
 
     fun part1(input: List<String>): Int {
-        return parseCards(input).sumOf {
-            (2.0.pow(it.numbers - 1)).toInt()
-        }
+        return input
+            .let(::parseCards)
+            .sumOf {
+                if (it == 0) 0 else 1.shl(it - 1)
+            }
     }
 
     fun part2(input: List<String>): Int {
-        return parseCards(input).let { cardResults ->
-            val map = MutableList(cardResults.size) { 1 }
+        return input.let(::parseCards).let { cardPoints ->
+            val map = MutableList(cardPoints.size) { 1 }
 
-            cardResults.forEachIndexed { index, cardResult ->
-                (1..cardResult.numbers).forEach {
-                    if (index + it <= cardResults.size) {
-                        map[index + it] += map[index]
-                    }
+            cardPoints.forEachIndexed { index, points ->
+                (1..points).forEach {
+                    map[index + it] += map[index]
                 }
             }
             map
