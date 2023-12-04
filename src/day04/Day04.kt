@@ -1,51 +1,40 @@
 package day04
 
 import kotlin.math.pow
-import utils.println
 import utils.readInput
 
-data class Card(val id: Int, val winningNumbers: Set<Int>, val myNumbers: List<Int>)
 data class CardResult(val id: Int, val numbers: Int)
 
 fun main() {
-    fun parseCards(input: List<String>): List<Card> {
+    fun parseCards(input: List<String>): List<CardResult> {
         return input.mapIndexed { i, s ->
-            s.split(":")[1].split("|").let {
-                Card(i + 1,
-                    it[0].split(" ").filter { it != "" }.map { it.toInt() }.toSet(),
-                    it[1].split(" ").filter { it != "" }.map { it.toInt() }
-                )
+            s.split(":")[1].split("|").let { line ->
+                val winningNumbers = line[0].split(" ").filter { it.isNotBlank() }.map { it.toInt() }.toSet()
+                val myNumbers = line[1].split(" ").filter { it.isNotBlank() }.map { it.toInt() }
+                CardResult(i + 1, myNumbers.count { it in winningNumbers })
             }
         }
     }
 
     fun part1(input: List<String>): Int {
-        val cards = parseCards(input)
-        return cards.sumOf { card ->
-            card.myNumbers.mapNotNull { if (it in card.winningNumbers) it else null }.let {
-                (2.toDouble().pow((it.size - 1).toDouble())).toInt()
-            }
+        return parseCards(input).sumOf {
+            (2.0.pow(it.numbers - 1)).toInt()
         }
     }
 
     fun part2(input: List<String>): Int {
-        val cardResults = parseCards(input).map { card ->
-            CardResult(card.id, card.myNumbers.map { it in card.winningNumbers }.filter { it }.size)
-        }
-        val map = mutableMapOf(*cardResults.map { it.id to 1 }.toTypedArray())
+        return parseCards(input).let { cardResults ->
+            val map = MutableList(cardResults.size) { 1 }
 
-        cardResults.forEach { cardResult ->
-            val entry = map[cardResult.id]!!
-            (0..<entry).forEach { _ ->
-                for (k in cardResult.id + 1..cardResult.id + cardResult.numbers) {
-                    if (k <= cardResults.size) {
-                        map[k] = map[k]!! + 1
+            cardResults.forEachIndexed { index, cardResult ->
+                (1..cardResult.numbers).forEach {
+                    if (index + it <= cardResults.size) {
+                        map[index + it] += map[index]
                     }
                 }
             }
-        }
-
-        return map.values.sum()
+            map
+        }.sum()
     }
 
     // test if implementation meets criteria from the description, like:
@@ -57,11 +46,10 @@ fun main() {
         Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
         Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
     """.trimIndent().lines()
-    check(part1(testInput) == 13)
-
-    check(part2(testInput) == 30)
+    check(testInput.let(::part1) == 13)
+    check(testInput.let(::part2) == 30)
 
     val input = readInput("day04/Day04")
-    part1(input).println()
-    part2(input).println()
+    input.let(::part1).also(::println).let { check(it == 23941) }
+    input.let(::part2).also(::println).let { check(it == 5571760) }
 }
