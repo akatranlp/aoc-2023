@@ -28,16 +28,13 @@ fun main() {
         return input.map {
             it.mapIndexed { i, c ->
                 val sub = it.substring(i)
-                var returnValue = c
-
-                for ((num, numC) in lookupTable.entries) {
+                lookupTable.entries.forEach { (num, numC) ->
                     if (sub.startsWith(num)) {
-                        returnValue = numC
-                        break
+                        return@mapIndexed numC
                     }
                 }
 
-                returnValue
+                c
             }.joinToString()
         }.let(::part1)
     }
@@ -49,7 +46,7 @@ fun main() {
         a1b2c3d4e5f
         treb7uchet
     """.trimIndent().lines()
-    check(part1(testInput1) == 142)
+    check(testInput1.let(::part1) == 142)
 
     val testInput2 = """
         two1nine
@@ -60,9 +57,9 @@ fun main() {
         zoneight234
         7pqrstsixteen
     """.trimIndent().lines()
-    check(part2(testInput2) == 281)
+    check(testInput2.let(::part2) == 281)
 
     val input = readInput("day01/Day01")
-    part1(input).println()
-    part2(input).println()
+    input.let(::part1).also(::println).let { check(it == 55029) }
+    input.let(::part2).also(::println).let { check(it == 55686) }
 }
