@@ -1,3 +1,10 @@
+package day01
+
+import utils.readInput
+
+import utils.println
+import utils.readInput
+
 fun main() {
     fun part1(input: List<String>): Int {
         return input.sumOf { s ->
@@ -55,7 +62,7 @@ fun main() {
     """.trimIndent().lines()
     check(part2(testInput2) == 281)
 
-    val input = readInput("Day01")
+    val input = readInput("day01/Day01")
     part1(input).println()
     part2(input).println()
 }

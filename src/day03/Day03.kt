@@ -1,3 +1,8 @@
+package day03
+
+import utils.println
+import utils.readInput
+
 data class Number(val row: Int, val start: Int, val end: Int, val number: Int)
 
 val neighbours = setOf(-1 to -1, -1 to 0, -1 to 1, 0 to -1, 0 to 1, 1 to -1, 1 to 0, 1 to 1)
@@ -99,7 +104,7 @@ fun main() {
 
     check(part2(testInput) == 467835)
 
-    val input = readInput("Day03")
+    val input = readInput("day03/Day03")
     part1(input).println()
     part2(input).println()
 }

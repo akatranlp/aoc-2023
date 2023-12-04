@@ -1,4 +1,8 @@
+package day04
+
 import kotlin.math.pow
+import utils.println
+import utils.readInput
 
 data class Card(val id: Int, val winningNumbers: Set<Int>, val myNumbers: List<Int>)
 data class CardResult(val id: Int, val numbers: Int)
@@ -57,7 +61,7 @@ fun main() {
 
     check(part2(testInput) == 30)
 
-    val input = readInput("Day04")
+    val input = readInput("day04/Day04")
     part1(input).println()
     part2(input).println()
 }

@@ -1,3 +1,8 @@
+package day02
+
+import utils.println
+import utils.readInput
+
 data class Game(val gameID: Int, val red: Int, val blue: Int, val green: Int)
 data class RGB(var red: Int, var blue: Int, var green: Int)
 
@@ -49,7 +54,7 @@ fun main() {
 
     check(part2(testInput) == 2286)
 
-    val input = readInput("Day02")
+    val input = readInput("day02/Day02")
     part1(input).println()
     part2(input).println()
 }
