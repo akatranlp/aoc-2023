@@ -50,11 +50,10 @@ fun main() {
         Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
         Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
     """.trimIndent().lines()
-    check(part1(testInput) == 8)
-
-    check(part2(testInput) == 2286)
+    check(testInput.let(::part1) == 8)
+    check(testInput.let(::part2) == 2286)
 
     val input = readInput("day02/Day02")
-    part1(input).println()
-    part2(input).println()
+    input.let(::part1).also(::println).let { check(it == 2105) }
+    input.let(::part2).also(::println).let { check(it == 72422) }
 }
