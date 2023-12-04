@@ -100,11 +100,10 @@ fun main() {
         ...${'$'}.*....
         .664.598..
     """.trimIndent().lines()
-    check(part1(testInput) == 4361)
-
-    check(part2(testInput) == 467835)
+    check(testInput.let(::part1) == 4361)
+    check(testInput.let(::part2) == 467835)
 
     val input = readInput("day03/Day03")
-    part1(input).println()
-    part2(input).println()
+    input.let(::part1).also(::println).let { check(it == 546563) }
+    input.let(::part2).also(::println).let { check(it == 91031374) }
 }
