@@ -1,6 +1,5 @@
 package day02
 
-import utils.println
 import utils.readInput
 
 data class Game(val gameID: Int, val red: Int, val blue: Int, val green: Int)
@@ -33,7 +32,7 @@ fun main() {
     }
 
     fun part1(input: List<String>): Int {
-        val maxRGB = RGB(12, 13, 14)
+        val maxRGB = RGB(12, 14, 13)
         return parseInput(input).filter { it.red <= maxRGB.red && it.blue <= maxRGB.blue && it.green <= maxRGB.green }
             .sumOf { it.gameID }
     }
