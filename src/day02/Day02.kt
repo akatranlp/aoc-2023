@@ -3,31 +3,40 @@ package day02
 import utils.readInput
 
 data class Game(val gameID: Int, val red: Int, val blue: Int, val green: Int)
-data class RGB(var red: Int, var blue: Int, var green: Int)
+data class RGB(var red: Int, var blue: Int, var green: Int) {
+    companion object {
+        fun fromLine(line: String): RGB {
+            return RGB(0, 0, 0).apply {
+                line.split(",").forEach {
+                    when {
+                        it.endsWith("red") -> red = it.removeSuffix("red").toInt()
+                        it.endsWith("blue") -> blue = it.removeSuffix("blue").toInt()
+                        it.endsWith("green") -> green = it.removeSuffix("green").toInt()
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 fun main() {
     fun parseInput(input: List<String>): List<Game> {
         return input.mapIndexed { i, s ->
-            s.split(":")[1].replace(" ", "").split(";").map {
-                val rgb = RGB(0, 0, 0)
-                it.split(",").forEach {
-                    when {
-                        it.endsWith("red") -> rgb.red = it.removeSuffix("red").toInt()
-                        it.endsWith("blue") -> rgb.blue = it.removeSuffix("blue").toInt()
-                        it.endsWith("green") -> rgb.green = it.removeSuffix("green").toInt()
+            s.split(":")[1]
+                .replace(" ", "")
+                .split(";")
+                .map(RGB::fromLine)
+                .let {
+                    it.fold(RGB(0, 0, 0)) { acc, rgb ->
+                        acc.red = maxOf(acc.red, rgb.red)
+                        acc.blue = maxOf(acc.blue, rgb.blue)
+                        acc.green = maxOf(acc.green, rgb.green)
+                        acc
+                    }.let {
+                        Game(i + 1, it.red, it.blue, it.green)
                     }
                 }
-                rgb
-            }.let {
-                it.fold(RGB(0, 0, 0)) { acc, rgb ->
-                    acc.red = maxOf(acc.red, rgb.red)
-                    acc.blue = maxOf(acc.blue, rgb.blue)
-                    acc.green = maxOf(acc.green, rgb.green)
-                    acc
-                }.let {
-                    Game(i + 1, it.red, it.blue, it.green)
-                }
-            }
         }
     }
 
