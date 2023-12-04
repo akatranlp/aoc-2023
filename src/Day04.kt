@@ -7,9 +7,10 @@ fun main() {
     fun parseCards(input: List<String>): List<Card> {
         return input.mapIndexed { i, s ->
             s.split(":")[1].split("|").let {
-                val winningNumbers = it[0].split(" ").filter { it != "" }.map { it.toInt() }.toSet()
-                val myNumbers = it[1].split(" ").filter { it != "" }.map { it.toInt() }
-                Card(i + 1, winningNumbers, myNumbers)
+                Card(i + 1,
+                    it[0].split(" ").filter { it != "" }.map { it.toInt() }.toSet(),
+                    it[1].split(" ").filter { it != "" }.map { it.toInt() }
+                )
             }
         }
     }
@@ -24,17 +25,16 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        val cards = parseCards(input).map { card ->
+        val cardResults = parseCards(input).map { card ->
             CardResult(card.id, card.myNumbers.map { it in card.winningNumbers }.filter { it }.size)
         }
-        val map = mutableMapOf(*cards.map { it.id to 1 }.toTypedArray())
+        val map = mutableMapOf(*cardResults.map { it.id to 1 }.toTypedArray())
 
-        for (cardResult in cards) {
+        cardResults.forEach { cardResult ->
             val entry = map[cardResult.id]!!
-            for (j in 0..<entry) {
-                val numbers = cardResult.numbers
-                for (k in cardResult.id + 1..cardResult.id + numbers) {
-                    if (k <= cards.size) {
+            (0..<entry).forEach { _ ->
+                for (k in cardResult.id + 1..cardResult.id + cardResult.numbers) {
+                    if (k <= cardResults.size) {
                         map[k] = map[k]!! + 1
                     }
                 }
