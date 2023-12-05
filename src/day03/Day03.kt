@@ -1,6 +1,5 @@
 package day03
 
-import utils.println
 import utils.readInput
 
 data class Number(val row: Int, val start: Int, val end: Int, val number: Int)
