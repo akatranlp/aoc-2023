@@ -1,5 +1,9 @@
 package day05
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import kotlin.io.path.Path
 import kotlin.io.path.readText
 import kotlin.math.min
@@ -78,17 +82,26 @@ fun main() {
 
     fun part2(input: String): Long {
         return input.let(::parseInput).let { almanac ->
-            var minValue = Long.MAX_VALUE
-            almanac.seeds.chunked(2).map { (seedStart, size) ->
-                (seedStart..<seedStart + size).forEach {
-                    minValue = min(seedToLocation(it, almanac), minValue)
-                }
+            val seedRanges = almanac.seeds.chunked(2).map { (seedStart, size) ->
+                (seedStart..<seedStart + size)
             }
-            minValue
+            runBlocking(Dispatchers.Default) {
+                val all = seedRanges.map { seedRange ->
+                    async {
+                        var minValue = Long.MAX_VALUE
+                        seedRange.forEach {
+                            minValue = min(seedToLocation(it, almanac), minValue)
+                        }
+                        minValue
+                    }
+
+                }.awaitAll()
+                all.min()
+            }
         }
     }
 
-    // test if implementation meets criteria from the description, like:
+// test if implementation meets criteria from the description, like:
     val testInput = """
     seeds: 79 14 55 13
 
