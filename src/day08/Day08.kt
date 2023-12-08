@@ -2,8 +2,8 @@ package day08
 
 import utils.readInput
 
-val RIGHT = 1
-val LEFT = -1
+const val RIGHT = 1
+const val LEFT = -1
 
 data class Node(val id: String, val leftId: String, val rightId: String) {
     companion object {
@@ -35,9 +35,34 @@ fun main() {
         return counter
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
+    fun part2(input: List<String>): Long {
+        val instructions = input[0].map { if (it == 'R') RIGHT else LEFT }.toTypedArray()
+        val nodes = input.drop(2).map { Node.fromLine(it) }.associateBy { it.id }
+
+        fun traverseOneStep(currentNode: String, instruction: Int): String {
+            val node = nodes[currentNode]!!
+            return if (instruction == RIGHT) {
+                node.rightId
+            } else {
+                node.leftId
+            }
+        }
+
+        val startingNodes = nodes.filterKeys { it.endsWith('A') }.map { it.key }
+        var currentNodes = startingNodes
+
+        var currentInstructionIndex = 0
+        var counter = 0L
+
+        while (!currentNodes.allEndWith('Z')) {
+            val instruction = instructions[currentInstructionIndex]
+            currentNodes = currentNodes.map { traverseOneStep(it, instruction) }
+            counter++
+            currentInstructionIndex = (currentInstructionIndex + 1) % instructions.size
+        }
+        return counter
     }
+
 
     // test if implementation meets criteria from the description, like:
     val testInput1 = """
@@ -79,4 +104,8 @@ fun main() {
     val input = readInput("day08/Day08")
     input.let(::part1).also(::println).let { check(it == 18023L) }
     input.let(::part2).also(::println).let { check(it == 0L) }
+}
+
+fun List<String>.allEndWith(char: Char): Boolean {
+    return this.all { it.endsWith(char) }
 }
