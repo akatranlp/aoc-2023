@@ -18,28 +18,25 @@ fun main() {
                 break
             }
         }
+        //           ==> time % 2 == 0
+        return if (time.and(1L) == 1L) 2 * (loops - winningIndex) else 2 * (loops - winningIndex) - 1
 
-        return if (time.and(1L) == 1L) {
-            (loops - winningIndex) * 2
-        } else {
-            (loops - winningIndex) * 2 - 1
-        }
     }
 
     fun part1(input: List<String>): Long {
         val (timeLine, distanceLine) = input
-        val times = timeLine.drop(5).split(" ").filter { it.isNotBlank() }.map { it.toLong() }
-        val distances = distanceLine.drop(9).split(" ").filter { it.isNotBlank() }.map { it.toLong() }
+        val times = timeLine.substringAfter(':').split(" ").filter { it.isNotBlank() }.map { it.toLong() }
+        val distances = distanceLine.substringAfter(':').split(" ").filter { it.isNotBlank() }.map { it.toLong() }
 
-        return times.indices.map {
-            calculateWins(times[it], distances[it])
-        }.reduce { acc, i -> acc * i }
+        return times.zip(distances).map {
+            calculateWins(it.first, it.second)
+        }.reduce(Long::times)
     }
 
     fun part2(input: List<String>): Long {
         val (timeLine, distanceLine) = input
-        val time = timeLine.drop(5).replace(" ", "").toLong()
-        val distance = distanceLine.drop(9).replace(" ", "").toLong()
+        val time = timeLine.substringAfter(':').replace(" ", "").toLong()
+        val distance = distanceLine.substringAfter(':').replace(" ", "").toLong()
 
         return calculateWins(time, distance)
     }
