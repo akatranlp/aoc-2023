@@ -16,15 +16,14 @@ data class Node(val id: String, val leftId: String, val rightId: String) {
 fun main() {
     fun part1(input: List<String>): Long {
         val instructions = input[0].map { if (it == 'R') RIGHT else LEFT }.toTypedArray()
-        val nodes = input.drop(2).map { Node.fromLine(it) }
-        val nodesMap = nodes.associateBy { it.id }
+        val nodes = input.drop(2).map { Node.fromLine(it) }.associateBy { it.id }
 
-        var currentId = nodes.first().id
+        var currentId = "AAA"
         var currentInstructionIndex = 0
         var counter = 0L
         while (currentId != "ZZZ") {
             val instruction = instructions[currentInstructionIndex]
-            val node = nodesMap[currentId]!!
+            val node = nodes[currentId]!!
             currentId = if (instruction == RIGHT) {
                 node.rightId
             } else {
@@ -41,17 +40,43 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = """
+    val testInput1 = """
+        RL
+
+        AAA = (BBB, CCC)
+        BBB = (DDD, EEE)
+        CCC = (ZZZ, GGG)
+        DDD = (DDD, DDD)
+        EEE = (EEE, EEE)
+        GGG = (GGG, GGG)
+        ZZZ = (ZZZ, ZZZ)
+    """.trimIndent().lines()
+    val testInput2 = """
         LLR
         
         AAA = (BBB, BBB)
         BBB = (AAA, ZZZ)
         ZZZ = (ZZZ, ZZZ)
     """.trimIndent().lines()
-    check(testInput.let(::part1) == 6L)
-    // check(testInput.let(::part2) == 1)
+    check(testInput1.let(::part1) == 2L)
+    check(testInput2.let(::part1) == 6L)
+
+    val testInput3 = """
+        LR
+
+        11A = (11B, XXX)
+        11B = (XXX, 11Z)
+        11Z = (11B, XXX)
+        22A = (22B, XXX)
+        22B = (22C, 22C)
+        22C = (22Z, 22Z)
+        22Z = (22B, 22B)
+        XXX = (XXX, XXX)
+    """.trimIndent().lines()
+
+    check(testInput3.let(::part2) == 6L)
 
     val input = readInput("day08/Day08")
-    input.let(::part1).also(::println).let { check(it == 0L) }
-    input.let(::part2).also(::println).let { check(it == 0) }
+    input.let(::part1).also(::println).let { check(it == 18023L) }
+    input.let(::part2).also(::println).let { check(it == 0L) }
 }
