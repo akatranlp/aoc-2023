@@ -1,11 +1,13 @@
 package day08
 
 import utils.readInput
+import java.math.BigInteger
 
-const val RIGHT = 1
-const val LEFT = -1
+const val RIGHT = 'R'
+const val LEFT = 'L'
 
 data class Node(val id: String, val leftId: String, val rightId: String) {
+
     companion object {
         fun fromLine(input: String): Node {
             return Node(input.substring(0..2), input.substring(7..9), input.substring(12..14))
@@ -13,54 +15,51 @@ data class Node(val id: String, val leftId: String, val rightId: String) {
     }
 }
 
-fun main() {
-    fun part1(input: List<String>): Long {
-        val instructions = input[0].map { if (it == 'R') RIGHT else LEFT }.toTypedArray()
-        val nodes = input.drop(2).map { Node.fromLine(it) }.associateBy { it.id }
-
-        var currentId = "AAA"
-        var currentInstructionIndex = 0
-        var counter = 0L
-        while (currentId != "ZZZ") {
-            val instruction = instructions[currentInstructionIndex]
+fun traverseNodes(
+    startingId: String,
+    instructions: String,
+    nodes: Map<String, Node>,
+    predicate: (String) -> Boolean,
+): Long {
+    var currentId = startingId
+    var counter = 0L
+    while (predicate(currentId)) {
+        instructions.forEach {
             val node = nodes[currentId]!!
-            currentId = if (instruction == RIGHT) {
-                node.rightId
-            } else {
-                node.leftId
+            when (it) {
+                RIGHT -> currentId = node.rightId
+                LEFT -> currentId = node.leftId
             }
             counter++
-            currentInstructionIndex = (currentInstructionIndex + 1) % instructions.size
         }
-        return counter
+    }
+    return counter
+}
+
+fun main() {
+    fun part1(input: List<String>): Long {
+        return input
+            .drop(2)
+            .map { Node.fromLine(it) }
+            .associateBy { it.id }
+            .let { nodes ->
+                traverseNodes("AAA", input[0], nodes) { it != "ZZZ" }
+            }
     }
 
     fun part2(input: List<String>): Long {
-        val instructions = input[0].map { if (it == 'R') RIGHT else LEFT }.toTypedArray()
-        val nodes = input.drop(2).map { Node.fromLine(it) }.associateBy { it.id }
-
-        fun traverseOneStep(currentNode: String, instruction: Int): String {
-            val node = nodes[currentNode]!!
-            return if (instruction == RIGHT) {
-                node.rightId
-            } else {
-                node.leftId
+        return input
+            .drop(2)
+            .map { Node.fromLine(it) }
+            .associateBy { it.id }
+            .let { nodes ->
+                nodes
+                    .filterKeys { it.last() == 'A' }
+                    .map {
+                        traverseNodes(it.key, input[0], nodes) { it.last() != 'Z' }
+                    }
+                    .let(::lcm)
             }
-        }
-
-        val startingNodes = nodes.filterKeys { it.endsWith('A') }.map { it.key }
-        var currentNodes = startingNodes
-
-        var currentInstructionIndex = 0
-        var counter = 0L
-
-        while (!currentNodes.allEndWith('Z')) {
-            val instruction = instructions[currentInstructionIndex]
-            currentNodes = currentNodes.map { traverseOneStep(it, instruction) }
-            counter++
-            currentInstructionIndex = (currentInstructionIndex + 1) % instructions.size
-        }
-        return counter
     }
 
 
@@ -103,9 +102,9 @@ fun main() {
 
     val input = readInput("day08/Day08")
     input.let(::part1).also(::println).let { check(it == 18023L) }
-    input.let(::part2).also(::println).let { check(it == 0L) }
+    input.let(::part2).also(::println).let { check(it == 14449445933179L) }
 }
 
-fun List<String>.allEndWith(char: Char): Boolean {
-    return this.all { it.endsWith(char) }
+private fun lcm(input: List<Long>): Long {
+    return input.map { BigInteger.valueOf(it) }.reduce { acc, i -> acc * i / acc.gcd(i) }.toLong()
 }
